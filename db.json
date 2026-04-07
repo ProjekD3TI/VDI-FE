@@ -1,0 +1,114 @@
+{
+  "virtual-desktops": [
+    {
+      "id": 25001,
+      "name": "Virtual Desktop 1",
+      "hostname": "kinggu",
+      "ip_address": "192.168.1.1",
+      "storage": 500,
+      "ram": 16,
+      "status": "Running"
+    },
+    {
+      "id": 25002,
+      "name": "Virtual Desktop 2",
+      "hostname": "kinggu",
+      "ip_address": "192.168.1.2",
+      "storage": 500,
+      "ram": 16,
+      "status": "Stopped"
+    },
+    {
+      "id": 25003,
+      "name": "Virtual Desktop 3",
+      "hostname": "kinggu",
+      "ip_address": "192.168.1.3",
+      "storage": 500,
+      "ram": 16,
+      "status": "Running"
+    },
+    {
+      "id": 25004,
+      "name": "Virtual Desktop 4",
+      "hostname": "kinggu",
+      "ip_address": "192.168.1.4",
+      "storage": 500,
+      "ram": 16,
+      "status": "Running"
+    },
+    {
+      "id": 25005,
+      "name": "Virtual Desktop 5",
+      "hostname": "kinggu",
+      "ip_address": "192.168.1.5",
+      "storage": 500,
+      "ram": 16,
+      "status": "Running"
+    },
+    {
+      "id": 25006,
+      "name": "Virtual Desktop 6",
+      "hostname": "kinggu",
+      "ip_address": "192.168.1.6",
+      "storage": 500,
+      "ram": 16,
+      "status": "Running"
+    }
+  ],
+  "user": [
+    {
+      "id": 1,
+      "nim": "v3435001",
+      "username": "kinggu",
+      "email": "rizqiandri@gmail.com",
+      "angkatan": 2025,
+      "password": "rahasia",
+      "vm_id": 25001
+    },
+    {
+      "id": 2,
+      "nim": "v3435002",
+      "username": "kinggu",
+      "email": "rizqiandri@gmail.com",
+      "angkatan": 2025,
+      "password": "rahasia",
+      "vm_id": 25002
+    },
+    {
+      "id": 3,
+      "nim": "v3435003",
+      "username": "kinggu",
+      "email": "rizqiandri@gmail.com",
+      "angkatan": 2025,
+      "password": "rahasia",
+      "vm_id": 25003
+    },
+    {
+      "id": 4,
+      "nim": "v3435004",
+      "username": "kinggu",
+      "email": "rizqiandri@gmail.com",
+      "angkatan": 2025,
+      "password": "rahasia",
+      "vm_id": 25004
+    },
+    {
+      "id": 5,
+      "nim": "v3435005",
+      "username": "kinggu",
+      "email": "rizqiandri@gmail.com",
+      "angkatan": 2025,
+      "password": "rahasia",
+      "vm_id": null
+    },
+    {
+      "id": 6,
+      "nim": "v3435006",
+      "username": "kinggu",
+      "email": "rizqiandri@gmail.com",
+      "angkatan": 2025,
+      "password": "rahasia",
+      "vm_id": null
+    }
+  ]
+}
