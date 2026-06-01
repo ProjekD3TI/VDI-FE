@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,10 +18,83 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
+  SelectValue,
 } from "./ui/select";
+import type { AngkatanType } from "@/schema/angkatan.schema";
+import { getAngkatan } from "@/services/agnkatan.service";
+import { createUser } from "@/services/user.service";
+import { CreateUserSchema } from "@/schema/user.schema";
+interface ModalProps {
+  onSuccess: () => void;
+}
+const ModalFormCreateUser = ({onSuccess}:ModalProps) => {
+  const [angkatan, setAngkatan] = useState<AngkatanType[]>([]);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [formData, setFormData] = useState({
+    nim: "",
+    name: "",
+    username: "",
+    email: "",
+    angkatan_id: "",
+  });
 
-const ModalFormCreateUser = () => {
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await getAngkatan();
+        setAngkatan(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadData();
+  }, []);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const result = CreateUserSchema.safeParse(formData);
+    console.log(result.data);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as string;
+        fieldErrors[field] = issue.message;
+      });
+
+      setErrors(fieldErrors);
+      return;
+    }
+
+    try {
+      await createUser(result.data);
+
+      setFormData({
+        nim: "",
+        name: "",
+        username: "",
+        email: "",
+        angkatan_id: "",
+      });
+
+      setErrors({});
+      onSuccess();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -30,30 +104,73 @@ const ModalFormCreateUser = () => {
         <AlertDialogHeader>
           <AlertDialogTitle>Create User</AlertDialogTitle>
           <AlertDialogDescription>
-            <form action="" className="md:w-116">
+            <form ref={formRef} onSubmit={handleSubmit} className="md:w-116">
               <FieldGroup className="grid min-w-74 grid-cols-1 md:grid-cols-2">
                 <Field>
                   <FieldLabel>NIM</FieldLabel>
-                  <Input placeholder="name" />
+                  <Input
+                    name="nim"
+                    value={formData.nim}
+                    onChange={handleChange}
+                    placeholder="NIM"
+                  />
+
+                  {errors.nim && (
+                    <p className="text-sm text-red-500">{errors.nim}</p>
+                  )}
                 </Field>
                 <Field>
                   <FieldLabel>Name</FieldLabel>
-                  <Input placeholder="name" />
+                  <Input
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Nama"
+                  />
                 </Field>
                 <Field>
                   <FieldLabel>Username</FieldLabel>
-                  <Input placeholder="username" />
+                  <Input
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    placeholder="Username"
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel>Email</FieldLabel>
+                  <Input
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Email"
+                  />
                 </Field>
                 <Field>
                   <FieldLabel>Angkatan</FieldLabel>
-                  <Select>
-                    <SelectTrigger>Pilih Angkatan</SelectTrigger>
+                  <Select
+                    value={formData.angkatan_id}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        angkatan_id: value,
+                      }))
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Pilih Angkatan" />
+                    </SelectTrigger>
+
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="2025">2025</SelectItem>
-                        <SelectItem value="2024">2024</SelectItem>
-                        <SelectItem value="2023">2023</SelectItem>
-                        <SelectItem value="2022">2022</SelectItem>
+                        <SelectLabel>Angkatan</SelectLabel>
+
+                        {angkatan.map((data) => (
+                          <SelectItem key={data.id} value={String(data.id)}>
+                            {data.angkatan}
+                          </SelectItem>
+                        ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -64,7 +181,9 @@ const ModalFormCreateUser = () => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Create</AlertDialogAction>
+          <AlertDialogAction onClick={() => formRef.current?.requestSubmit()}>
+            Create
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -23,12 +23,13 @@ import {
 import type { UserType } from "@/schema/user.schema";
 import { getUser } from "@/services/user.service";
 import { MoreHorizontalIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-
+import { use, useState } from "react";
+import { toast } from "sonner";
+const usersPromise = getUser();
 const User = () => {
-  const [user, setUser] = useState<UserType[]>([]);
+  // const [user, setUser] = useState<UserType[]>([]);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set([]));
-
+  const user = use(usersPromise) as UserType[]
   const selectAll = selectedRows.size === user.length;
 
   const handleSelectAll = (checked: boolean) => {
@@ -48,17 +49,20 @@ const User = () => {
     }
     setSelectedRows(newSelected);
   };
-  useEffect(() => {
-    const loadUser = async () => {
-      const data = await getUser();
-      setUser(data);
-    };
-    loadUser();
-  }, []);
   return (
     <div className="w-full p-4">
       <div className="flex justify-between my-4">
-        <ModalFormCreateUser />
+        <ModalFormCreateUser onSuccess={user}/>
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast.error("Event has not been created", {
+              position: "top-center",
+            })
+          }
+        >
+          Error
+        </Button>
         <Field orientation={"horizontal"} className="w-md">
           <Input type="search" placeholder="Search..." />
           <Button>Search</Button>
@@ -66,7 +70,7 @@ const User = () => {
       </div>
       <div className="bg-card p-3 border rounded-md">
         <Table>
-          <TableCaption>A list of your recent invoices.</TableCaption>
+          <TableCaption>A list of your User</TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-8">
@@ -78,10 +82,11 @@ const User = () => {
                 />
               </TableHead>
               <TableHead className="w-25">NIM</TableHead>
+              <TableHead>Name</TableHead>
               <TableHead>Username</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Angkatan</TableHead>
-              <TableHead>VM ID</TableHead>
+              <TableHead className="text-center">VMs</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -101,12 +106,20 @@ const User = () => {
                 <TableCell className="font-medium" key={data.nim}>
                   {data.nim}
                 </TableCell>
+                <TableCell>{data.name}</TableCell>
                 <TableCell>{data.username}</TableCell>
                 <TableCell>{data.email}</TableCell>
                 <TableCell>{data.angkatan}</TableCell>
-                <TableCell>
-                  {data.vm_id ? data.vm_id : <ModalFormCreateVM id={data.id} />}
+                <TableCell className="text-center">
+                  {data.has_vm === true ? (
+                    "view VM"
+                  ) : (
+                    <ModalFormCreateVM id={data.id} />
+                  )}
                 </TableCell>
+                {/* <TableCell>
+                  {data.vm_id ? data.vm_id :   <ModalFormCreateVM id={data.id} />}
+                </TableCell> */}
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

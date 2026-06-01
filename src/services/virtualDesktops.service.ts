@@ -12,3 +12,18 @@ export const getVirtualDesktops = async () => {
     throw error;
   }
 };
+export interface CreateVmPayload {
+  template_id: number;
+  user_id: number;
+  ip_address: string;
+}
+
+export const createVirtualMachine = async (payload: CreateVmPayload) => {
+  try {
+    const response = await api.post("/vms", payload);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating VM:", error);
+    throw error;
+  }
+};

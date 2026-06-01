@@ -7,6 +7,7 @@ import {
   SidebarMenuButton,
   SidebarProvider,
 } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 import { NavLink, Outlet, useLocation } from "react-router";
 
 const Layout = () => {
@@ -22,14 +23,29 @@ const Layout = () => {
             <span>logo</span>
           </SidebarHeader>
           <SidebarContent>
-            <SidebarMenuButton asChild isActive={isActive("/dashboard")} >
+            <SidebarMenuButton asChild isActive={isActive("/dashboard")}>
               <NavLink to="">Monitoring</NavLink>
             </SidebarMenuButton>
             <SidebarMenuButton asChild isActive={isActive("/dashboard/users")}>
               <NavLink to="users">Users</NavLink>
             </SidebarMenuButton>
-            <SidebarMenuButton asChild isActive={isActive("/dashboard/virtual-desktop")} >
+            <SidebarMenuButton
+              asChild
+              isActive={isActive("/dashboard/virtual-desktop")}
+            >
               <NavLink to="virtual-desktop">Virtual Desktop</NavLink>
+            </SidebarMenuButton>
+            <SidebarMenuButton
+              asChild
+              isActive={isActive("/dashboard/ip-address")}
+            >
+              <NavLink to="ip-address">IP Address</NavLink>
+            </SidebarMenuButton>
+            <SidebarMenuButton
+              asChild
+              isActive={isActive("/dashboard/angkatan")}
+            >
+              <NavLink to="angkatan">Angkatan</NavLink>
             </SidebarMenuButton>
           </SidebarContent>
           <SidebarFooter>
@@ -40,7 +56,10 @@ const Layout = () => {
           </SidebarFooter>
         </Sidebar>
       </SidebarProvider>
-      <Outlet />
+      <div>
+        <Outlet />
+        <Toaster />
+      </div>
     </div>
   );
 };
