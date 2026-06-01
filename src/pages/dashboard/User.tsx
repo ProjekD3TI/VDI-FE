@@ -52,7 +52,7 @@ const User = () => {
   return (
     <div className="w-full p-4">
       <div className="flex justify-between my-4">
-        <ModalFormCreateUser onSuccess={user}/>
+        <ModalFormCreateUser/>
         <Button
           variant="outline"
           onClick={() =>

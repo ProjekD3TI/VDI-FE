@@ -26,10 +26,8 @@ import type { AngkatanType } from "@/schema/angkatan.schema";
 import { getAngkatan } from "@/services/agnkatan.service";
 import { createUser } from "@/services/user.service";
 import { CreateUserSchema } from "@/schema/user.schema";
-interface ModalProps {
-  onSuccess: () => void;
-}
-const ModalFormCreateUser = ({onSuccess}:ModalProps) => {
+
+const ModalFormCreateUser = () => {
   const [angkatan, setAngkatan] = useState<AngkatanType[]>([]);
   const formRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = useState({
@@ -89,7 +87,6 @@ const ModalFormCreateUser = ({onSuccess}:ModalProps) => {
       });
 
       setErrors({});
-      onSuccess();
     } catch (error) {
       console.error(error);
     }
