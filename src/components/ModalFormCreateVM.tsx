@@ -26,6 +26,7 @@ import {
 import { getAvailableIpAddress } from "@/services/ipAddress.service";
 import type { IpAddressType } from "@/schema/ipAddress.schema";
 import { createVirtualMachine } from "@/services/virtualDesktops.service"; // Import service VM
+import { toast } from "sonner";
 
 type Props = {
   id: number;
@@ -97,7 +98,9 @@ const ModalFormCreateVM = ({ id }: Props) => {
       setSelectedIp("");
 
       // Opsional: Anda bisa tambahkan toast notification di sini
-      alert("VM sedang dibuat dan dimasukkan ke antrean sistem!");
+      toast.info("Virtual Machine Sedang dibuat. Mohon Tunggu !", {
+        position: "top-center",
+      });
     } catch (err: any) {
       // Tangani error, misalnya jika backend mengembalikan error validasi 422
       alert(

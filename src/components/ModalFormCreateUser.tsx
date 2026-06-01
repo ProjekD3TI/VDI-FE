@@ -1,15 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "./ui/alert-dialog";
+
 import { Button } from "./ui/button";
 import { Field, FieldGroup, FieldLabel } from "./ui/field";
 import { Input } from "./ui/input";
@@ -26,9 +16,22 @@ import type { AngkatanType } from "@/schema/angkatan.schema";
 import { getAngkatan } from "@/services/agnkatan.service";
 import { createUser } from "@/services/user.service";
 import { CreateUserSchema } from "@/schema/user.schema";
-
-const ModalFormCreateUser = () => {
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+interface ModalFormCreateUserProps {
+  refreshData?: () => void;
+}
+const ModalFormCreateUser = ({ refreshData }: ModalFormCreateUserProps) => {
   const [angkatan, setAngkatan] = useState<AngkatanType[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = useState({
     nim: "",
@@ -60,9 +63,7 @@ const ModalFormCreateUser = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const result = CreateUserSchema.safeParse(formData);
-    console.log(result.data);
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
 
@@ -72,6 +73,7 @@ const ModalFormCreateUser = () => {
       });
 
       setErrors(fieldErrors);
+      toast.error("Data Tidak Valid!", { position: "top-center" });
       return;
     }
 
@@ -85,7 +87,10 @@ const ModalFormCreateUser = () => {
         email: "",
         angkatan_id: "",
       });
-
+if (refreshData) {
+        refreshData();
+      }
+      setIsOpen(false);
       setErrors({});
     } catch (error) {
       console.error(error);
@@ -93,97 +98,105 @@ const ModalFormCreateUser = () => {
   };
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button>Create User</Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Create User</AlertDialogTitle>
-          <AlertDialogDescription>
-            <form ref={formRef} onSubmit={handleSubmit} className="md:w-116">
-              <FieldGroup className="grid min-w-74 grid-cols-1 md:grid-cols-2">
-                <Field>
-                  <FieldLabel>NIM</FieldLabel>
-                  <Input
-                    name="nim"
-                    value={formData.nim}
-                    onChange={handleChange}
-                    placeholder="NIM"
-                  />
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button >Create User</Button>
+      </DialogTrigger>
+      <DialogContent className="">
+        <form ref={formRef} onSubmit={handleSubmit} className="md:w-116">
+          <DialogHeader>
+            <DialogTitle>Create User</DialogTitle>
+            <DialogDescription>
+              Click save when you&apos;re
+              done.
+            </DialogDescription>
+          </DialogHeader>
+          <FieldGroup className="grid min-w-74 grid-cols-1 md:grid-cols-2">
+            <Field>
+              <FieldLabel>NIM</FieldLabel>
+              <Input
+                name="nim"
+                value={formData.nim}
+                onChange={handleChange}
+                placeholder="NIM"
+              />
 
-                  {errors.nim && (
-                    <p className="text-sm text-red-500">{errors.nim}</p>
-                  )}
-                </Field>
-                <Field>
-                  <FieldLabel>Name</FieldLabel>
-                  <Input
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Nama"
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel>Username</FieldLabel>
-                  <Input
-                    name="username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    placeholder="Username"
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel>Email</FieldLabel>
-                  <Input
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Email"
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel>Angkatan</FieldLabel>
-                  <Select
-                    value={formData.angkatan_id}
-                    onValueChange={(value) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        angkatan_id: value,
-                      }))
-                    }
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Pilih Angkatan" />
-                    </SelectTrigger>
+              {errors.nim && (
+                <p className="text-xs text-red-500">{errors.nim}</p>
+              )}
+            </Field>
+            <Field>
+              <FieldLabel>Name</FieldLabel>
+              <Input
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Nama"
+              />
+            </Field>
+            <Field>
+              <FieldLabel>Username</FieldLabel>
+              <Input
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="Username"
+              />
+              {errors.username && (
+                <p className="text-xs text-red-500">{errors.username}</p>
+              )}
+            </Field>
+            <Field>
+              <FieldLabel>Email</FieldLabel>
+              <Input
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Email"
+              />
+              {errors.email && (
+                <p className="text-xs text-red-500">{errors.email}</p>
+              )}
+            </Field>
+            <Field>
+              <FieldLabel>Angkatan</FieldLabel>
+              <Select
+                value={formData.angkatan_id}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    angkatan_id: value,
+                  }))
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih Angkatan" />
+                </SelectTrigger>
 
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Angkatan</SelectLabel>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Angkatan</SelectLabel>
 
-                        {angkatan.map((data) => (
-                          <SelectItem key={data.id} value={String(data.id)}>
-                            {data.angkatan}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </Field>
-              </FieldGroup>
-            </form>
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={() => formRef.current?.requestSubmit()}>
-            Create
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+                    {angkatan.map((data) => (
+                      <SelectItem key={data.id} value={String(data.id)}>
+                        {data.angkatan}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </Field>
+          </FieldGroup>
+          <DialogFooter>
+           <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit">Save</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
 

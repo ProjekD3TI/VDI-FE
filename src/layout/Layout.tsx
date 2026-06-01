@@ -12,9 +12,9 @@ import { NavLink, Outlet, useLocation } from "react-router";
 
 const Layout = () => {
   const location = useLocation();
-  const isActive = (path:string)=>{
-    return location.pathname === path
-  }
+  const isActive = (path: string) => {
+    return location.pathname === path;
+  };
   return (
     <div className="flex">
       <SidebarProvider className="w-fit">
@@ -56,10 +56,8 @@ const Layout = () => {
           </SidebarFooter>
         </Sidebar>
       </SidebarProvider>
-      <div>
-        <Outlet />
-        <Toaster />
-      </div>
+      <Outlet />
+      <Toaster/>
     </div>
   );
 };

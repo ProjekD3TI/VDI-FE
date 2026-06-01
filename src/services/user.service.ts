@@ -56,3 +56,24 @@ export const createUser = async (payload: CreateUserPayload) => {
      });
   }
 };
+export const deleteUser = async (id:number)=>{
+  try {
+    await api.delete(`/users/${id}`);
+    toast.success('Delete User Success',{position:'top-center'})
+    return true
+  } catch (error) {
+    console.error(error);
+    let message = "Terjadi kesalahan sistem";
+
+    // Validasi apakah error berasal dari Axios
+    if (axios.isAxiosError(error)) {
+        // TypeScript sekarang tahu 'error' memiliki properti response
+        message = error.response?.data?.message || error.message;
+    } else if (error instanceof Error) {
+        // Jika error javascript biasa
+        message = error.message;
+    }
+    toast.error(message,{position:'top-center'})
+    return false
+  }
+}

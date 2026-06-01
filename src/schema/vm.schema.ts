@@ -1,12 +1,13 @@
 import { z } from "zod";
 
 export const VmSchema = z.object({
-  id: z.string(),
-  hostname: z.string(),
-  ip_address: z.string(),
+  vmid: z.number(),
+  name: z.string(),
+  ip_address: z.string().nullable(),
   storage: z.number(),
   ram: z.number(),
-  status: z.enum(["Running","Stopped"]),
+  template_id:z.number().nullable(),
+  status: z.enum(["running","stopped"]),
 });
 
 export type VmTypes = z.infer<typeof VmSchema>;
