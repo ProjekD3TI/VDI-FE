@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import { Button } from "./ui/button";
 import { Field, FieldGroup, FieldLabel } from "./ui/field";
@@ -12,9 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import type { AngkatanType } from "@/schema/angkatan.schema";
-import { getAngkatan } from "@/services/agnkatan.service";
-import { createUser } from "@/services/user.service";
 import { CreateUserSchema } from "@/schema/user.schema";
 import { toast } from "sonner";
 import {
@@ -26,13 +23,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-interface ModalFormCreateUserProps {
-  refreshData?: () => void;
-}
-const ModalFormCreateUser = ({ refreshData }: ModalFormCreateUserProps) => {
-  const [angkatan, setAngkatan] = useState<AngkatanType[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
+import { useAngkatan } from "@/hooks/useAngkatan";
+import { useCreateUser } from "@/hooks/useUsers";
+import { Spinner } from "./ui/spinner";
+
+const ModalFormCreateUser = () => {
   const formRef = useRef<HTMLFormElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const { data: angkatan = [], isLoading: isLoadingAngkatan } = useAngkatan();
+  const { mutateAsync: addUser, isPending } = useCreateUser();
   const [formData, setFormData] = useState({
     nim: "",
     name: "",
@@ -42,18 +42,7 @@ const ModalFormCreateUser = ({ refreshData }: ModalFormCreateUserProps) => {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const data = await getAngkatan();
-        setAngkatan(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
 
-    loadData();
-  }, []);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
@@ -78,7 +67,7 @@ const ModalFormCreateUser = ({ refreshData }: ModalFormCreateUserProps) => {
     }
 
     try {
-      await createUser(result.data);
+      await addUser(result.data);
 
       setFormData({
         nim: "",
@@ -87,9 +76,7 @@ const ModalFormCreateUser = ({ refreshData }: ModalFormCreateUserProps) => {
         email: "",
         angkatan_id: "",
       });
-if (refreshData) {
-        refreshData();
-      }
+
       setIsOpen(false);
       setErrors({});
     } catch (error) {
@@ -100,15 +87,14 @@ if (refreshData) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button >Create User</Button>
+        <Button>Create User</Button>
       </DialogTrigger>
       <DialogContent className="">
         <form ref={formRef} onSubmit={handleSubmit} className="md:w-116">
           <DialogHeader>
             <DialogTitle>Create User</DialogTitle>
             <DialogDescription>
-              Click save when you&apos;re
-              done.
+              Click save when you&apos;re done.
             </DialogDescription>
           </DialogHeader>
           <FieldGroup className="grid min-w-74 grid-cols-1 md:grid-cols-2">
@@ -178,21 +164,29 @@ if (refreshData) {
                   <SelectGroup>
                     <SelectLabel>Angkatan</SelectLabel>
 
-                    {angkatan.map((data) => (
-                      <SelectItem key={data.id} value={String(data.id)}>
-                        {data.angkatan}
-                      </SelectItem>
-                    ))}
+                    {isLoadingAngkatan ? (
+                      <Spinner />
+                    ) : (
+                      angkatan.map((data) => (
+                        <SelectItem key={data.id} value={String(data.id)}>
+                          {data.angkatan}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </Field>
           </FieldGroup>
           <DialogFooter>
-           <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsOpen(false)}
+            >
               Cancel
             </Button>
-            <Button type="submit">Save</Button>
+            <Button type="submit">{isPending ? <Spinner /> : "Save"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

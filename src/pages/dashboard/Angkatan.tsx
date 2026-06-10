@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 import type { AngkatanType } from "@/schema/angkatan.schema";
-import { getAngkatan } from "@/services/agnkatan.service";
+import { getAngkatan } from "@/services/angkatan.service";
 
 const Angkatan = () => {
   const [angkatan, setAngkatan] = useState<AngkatanType[]>([]);

@@ -1,3 +1,4 @@
+import { SkeletonTable } from "@/components/skeleteton/SkeletonTable";
 import {
   Table,
   TableBody,
@@ -6,37 +7,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getIpAddresses } from "@/services/ipAddress.service";
-import type { IpAddressType } from "@/schema/ipAddress.schema";
-import { useEffect, useState } from "react";
+import { useIpAddress } from "@/hooks/useIpAddress";
 const IpAddress = () => {
-  const [dataIps, setDataIps] = useState<IpAddressType[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchIps = async () => {
-      try {
-        setIsLoading(true);
-        const data = await getIpAddresses();
-        setDataIps(data);
-      } catch (err) {
-        setError("Gagal mengambil data IP Address dari server.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchIps();
-  }, []);
-
-  if (isLoading) {
-    return <div className="p-4 text-center">Memuat data IP Address...</div>;
-  }
-
-  if (error) {
-    return <div className="p-4 text-center text-red-500">{error}</div>;
-  }
+  const { data: data = [], isLoading: isLoadData, isError } = useIpAddress();
   return (
     <div className="bg-card p-3 border rounded-md w-full m-4">
       <Table>
@@ -48,14 +21,10 @@ const IpAddress = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {dataIps.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={3} className="text-center h-24">
-                Belum ada data IP Address.
-              </TableCell>
-            </TableRow>
+          {isLoadData || isError ? (
+            <SkeletonTable row={20} col={3} />
           ) : (
-            dataIps.map((ip) => (
+            data.map((ip) => (
               <TableRow key={ip.id}>
                 <TableCell>{ip.id}</TableCell>
                 <TableCell>{ip.ip_address}</TableCell>

@@ -7,7 +7,11 @@ export const UserSchema = z.object({
   username: z.string(),
   email: z.email(),
   angkatan: z.number(),
-  has_vm: z.boolean(),
+  vmid: z.number().nullable().optional(),
+  vm_status: z
+    .enum(["stopped", "running", "failed", "creating"])
+    .nullable()
+    .optional(),
   created_at: z.string(),
 });
 

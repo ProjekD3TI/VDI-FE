@@ -8,13 +8,16 @@ import {
   SidebarProvider,
 } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import { useLogout } from "@/hooks/useAuth";
 import { NavLink, Outlet, useLocation } from "react-router";
 
 const Layout = () => {
   const location = useLocation();
+  const { mutate: logout, isPending } = useLogout();
   const isActive = (path: string) => {
     return location.pathname === path;
   };
+
   return (
     <div className="flex">
       <SidebarProvider className="w-fit">
@@ -50,14 +53,16 @@ const Layout = () => {
           </SidebarContent>
           <SidebarFooter>
             <SidebarMenuButton asChild>
-              <Button>Logout</Button>
+              <Button onClick={() => logout} disabled={isPending}>
+                {isPending ? "Logging Out" : "Logout"}
+              </Button>
             </SidebarMenuButton>
             <span>Copyright 2024</span>
           </SidebarFooter>
         </Sidebar>
       </SidebarProvider>
       <Outlet />
-      <Toaster/>
+      <Toaster />
     </div>
   );
 };

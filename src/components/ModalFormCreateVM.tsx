@@ -12,9 +12,8 @@ import {
 import { Button } from "./ui/button";
 import { Field, FieldLabel, FieldSeparator } from "./ui/field";
 import { Input } from "./ui/input";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { getUserById } from "@/services/user.service";
-import type { UserType } from "@/schema/user.schema";
 import {
   Select,
   SelectContent,
@@ -24,9 +23,9 @@ import {
   SelectValue,
 } from "./ui/select";
 import { getAvailableIpAddress } from "@/services/ipAddress.service";
-import type { IpAddressType } from "@/schema/ipAddress.schema";
-import { createVirtualMachine } from "@/services/virtualDesktops.service"; // Import service VM
-import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { useCreateVm, useGetTemplate } from "@/hooks/useVirtualDesktops";
+import { useAvailableIpAddress } from "@/hooks/useIpAddress";
 
 type Props = {
   id: number;
@@ -34,87 +33,46 @@ type Props = {
 
 const ModalFormCreateVM = ({ id }: Props) => {
   const formRef = useRef<HTMLFormElement>(null);
-
-  // States
-  const [open, setOpen] = useState(false); // Kontrol modal manual
-  const [user, setUser] = useState<UserType | null>(null);
-  const [dataIps, setDataIps] = useState<IpAddressType[]>([]);
+  const [open, setOpen] = useState(false);
   const [selectedIp, setSelectedIp] = useState<string>("");
+  const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
 
-  // Loading States
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchIps = async () => {
-      try {
-        setIsLoading(true);
-        const data = await getAvailableIpAddress();
-        setDataIps(data);
-      } catch (err) {
-        setError("Gagal mengambil data IP Address dari server.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    // Hanya fetch IP jika modal sedang terbuka
-    if (open) {
-      fetchIps();
-    }
-  }, [open]); // Jadikan 'open' sebagai dependency
-
-  useEffect(() => {
-    const loadUser = async () => {
-      const data = await getUserById(id);
-      setUser(data);
-    };
-
-    if (open) {
-      loadUser();
-    }
-  }, [id, open]);
-
+  const { data: user } = useQuery({
+    queryKey: ["user", id],
+    queryFn: () => getUserById(id),
+    enabled: open,
+  });
+  const {
+    data: dataIps = [],
+    isLoading: isLoadingIps,
+    isError: isErrorIps,
+  } = useAvailableIpAddress(open);
+  const {
+    data: template = [],
+    isLoading: isLoadingTemplate,
+    isError: isErrorTemplate,
+  } = useGetTemplate(open);
+  const { mutate: createVm, isPending: isSubmitting } = useCreateVm(() => {
+    setOpen(false); // Tutup modal jika sukses
+    setSelectedIp(""); // Reset IP
+    setSelectedTemplate(null);
+  });
   // Fungsi saat form disubmit
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedIp || !selectedTemplate) return;
 
-    if (!selectedIp) return;
-
-    try {
-      setIsSubmitting(true);
-
-      const payload = {
-        template_id: 23077, // Statis sementara, bisa dibuat dinamis nanti
-        user_id: id,
-        ip_address: selectedIp,
-      };
-
-      await createVirtualMachine(payload);
-
-      // Jika berhasil, tutup modal dan kembalikan state IP ke awal
-      setOpen(false);
-      setSelectedIp("");
-
-      // Opsional: Anda bisa tambahkan toast notification di sini
-      toast.info("Virtual Machine Sedang dibuat. Mohon Tunggu !", {
-        position: "top-center",
-      });
-    } catch (err: any) {
-      // Tangani error, misalnya jika backend mengembalikan error validasi 422
-      alert(
-        err.response?.data?.message || "Terjadi kesalahan saat membuat VM.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    createVm({
+      template_id: selectedTemplate!,
+      user_id: id,
+      ip_address: selectedIp,
+    });
   };
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button size={"sm"}>Create VM</Button>
+        <Button className="w-full">Create VM</Button>
       </AlertDialogTrigger>
 
       <AlertDialogContent>
@@ -167,22 +125,22 @@ const ModalFormCreateVM = ({ id }: Props) => {
                   <Select
                     value={selectedIp}
                     onValueChange={setSelectedIp}
-                    disabled={isLoading || !!error || isSubmitting}
+                    disabled={isLoadingIps || isErrorIps || isSubmitting}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue
                         placeholder={
-                          isLoading
+                          isLoadingIps
                             ? "Memuat IP..."
-                            : error
+                            : isErrorIps
                               ? "Gagal memuat"
                               : "Pilih IP Address"
                         }
                       />
                     </SelectTrigger>
-                    <SelectContent className="max-h-[200px]">
+                    <SelectContent className="max-h-50">
                       <SelectGroup>
-                        {dataIps.length === 0 && !isLoading ? (
+                        {dataIps.length === 0 && !isLoadingIps ? (
                           <div className="p-2 text-sm text-center">
                             IP Habis/Kosong
                           </div>
@@ -197,6 +155,43 @@ const ModalFormCreateVM = ({ id }: Props) => {
                     </SelectContent>
                   </Select>
                 </Field>
+                <Field>
+                  <FieldLabel htmlFor="ipaddress">Template</FieldLabel>
+
+                  <Select
+                    value={selectedTemplate?.toString() ?? ""}
+                    onValueChange={(value) =>
+                      setSelectedTemplate(Number(value))
+                    }
+                    disabled={
+                      isLoadingTemplate || isErrorTemplate || isSubmitting
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue
+                        placeholder={
+                          isLoadingTemplate
+                            ? "Memuat Template..."
+                            : isErrorTemplate
+                              ? "Gagal memuat"
+                              : "Pilih Template"
+                        }
+                      />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      <SelectGroup>
+                        {template.map((data) => (
+                          <SelectItem
+                            key={data.template_id}
+                            value={String(data.template_id)}
+                          >
+                            {data.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </Field>
               </div>
             </form>
           </AlertDialogDescription>
@@ -207,7 +202,9 @@ const ModalFormCreateVM = ({ id }: Props) => {
           <AlertDialogAction
             onClick={() => formRef.current?.requestSubmit()}
             // Disable tombol saat meload data API, jika IP belum dipilih, atau saat proses submit
-            disabled={isLoading || !selectedIp || isSubmitting}
+            disabled={
+              isLoadingIps || !selectedIp || !selectedTemplate || isSubmitting
+            }
           >
             {isSubmitting ? "Creating..." : "Create"}
           </AlertDialogAction>

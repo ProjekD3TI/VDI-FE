@@ -1,13 +1,13 @@
 import axios from "axios";
 
-const axiosInstance = axios.create({
+const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
     headers: {
         "Content-Type": "application/json",
     },
 });
 
-axiosInstance.interceptors.request.use(
+api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
         if(token){
@@ -20,7 +20,7 @@ axiosInstance.interceptors.request.use(
     }
 )
 
-axiosInstance.interceptors.response.use(
+api.interceptors.response.use(
     (response)=>response,
     (error)=>{
         if(error.response && error.response.status === 401){
@@ -30,4 +30,4 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(error)
     }
 )
-export default axiosInstance;   
+export default api;   

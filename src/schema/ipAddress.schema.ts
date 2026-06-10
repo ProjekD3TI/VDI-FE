@@ -4,7 +4,7 @@ import { z } from "zod";
 export const ipAddressSchema = z.object({
   id: z.number(),
   ip_address: z.string(),
-  status: z.enum(["free", "used"]),
+  status: z.enum(["free", "used"]).optional(),
 });
 
 // Ekspor tipe agar bisa digunakan di komponen dan service
