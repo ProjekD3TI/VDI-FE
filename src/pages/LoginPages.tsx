@@ -15,20 +15,16 @@ import { useState } from "react";
 const LoginPages = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
-  const { mutate: login, isPending, error } = useLogin();
+  const { mutate: login, isPending, isError } = useLogin();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    login(
-      { email, password },
-      {
-        onError: (err) => {
-          setErrorMessage(err.message);
-        },
-      },
-    );
+
+    login({
+      email,
+      password,
+    });
   };
 
   return (
@@ -40,9 +36,9 @@ const LoginPages = () => {
             <ModeToggle />
             {/* <ModeSwitch /> */}
           </div>
-          {errorMessage && (
+          {isError && (
             <p className="text-red-500 text-sm mb-2 text-center">
-              {errorMessage}
+              {"Incorrect email or password."}
             </p>
           )}
           <FieldGroup>

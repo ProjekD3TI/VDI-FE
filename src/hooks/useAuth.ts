@@ -15,7 +15,8 @@ export const useLogin = () => {
       navigate("/dashboard", { replace: true });
     },
     onError: (error) => {
-      handleError(error);
+      // console.log("LOGIN ERROR", error);
+      handleError(error.message);
     },
   });
 };

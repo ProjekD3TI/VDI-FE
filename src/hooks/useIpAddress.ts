@@ -4,10 +4,10 @@ import {
 } from "@/services/ipAddress.service";
 import { useQuery } from "@tanstack/react-query";
 
-export const useIpAddress = () => {
+export const useIpAddress = (page:number) => {
   return useQuery({
-    queryKey: ["ipAddress"],
-    queryFn: getIpAddresses,
+    queryKey: ["ipAddress",page],
+    queryFn: ()=>getIpAddresses(page),
   });
 };
 
