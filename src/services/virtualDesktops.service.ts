@@ -29,7 +29,7 @@ export const deleteVirtualMachine = async (vmid: number) => {
   return response.data;
 };
 
-export const actionVm = async (vmid: number, action: string) => {
+export const actionVm = async (vmid: number | null | undefined, action: string) => {
   const response = await api.post(`/vms/${action}`, { vmid });
   return response.data;
 };

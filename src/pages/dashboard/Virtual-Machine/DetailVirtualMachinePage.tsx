@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { Link, useParams } from "react-router";
 
-const DetailVirtualMachine = () => {
+const DetailVirtualMachinePage = () => {
   const { vmid } = useParams();
   const {
     mutate: handleAction,
@@ -187,4 +187,4 @@ const DetailVirtualMachine = () => {
   );
 };
 
-export default DetailVirtualMachine;
+export default DetailVirtualMachinePage;

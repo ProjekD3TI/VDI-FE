@@ -1,14 +1,12 @@
 // src/services/user.service.ts
 import { UserSchema } from "@/schema/user.schema";
 import api from "@/api/axiosInstance";
-import z from "zod";
 import type { CreateUserType } from "@/schema/user.schema"; // Sesuaikan path
 
-export const getUser = async () => {
-  const response = await api.get("/users");
-  
-  const schema = z.array(UserSchema);
-  return schema.parse(response.data.data);
+export const getUser = async (page: number) => {
+  const response = await api.get(`/users?page=${page}`);
+
+  return response.data
 };
 
 export const getUserById = async (id: number) => {

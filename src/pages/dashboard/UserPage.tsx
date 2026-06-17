@@ -1,5 +1,6 @@
 import ModalFormCreateUser from "@/components/ModalFormCreateUser";
 import ModalFormCreateVM from "@/components/ModalFormCreateVM";
+import { PaginationComponent } from "@/components/PaginationComponent";
 import { SkeletonTable } from "@/components/skeleteton/SkeletonTable";
 import {
   AlertDialog,
@@ -33,12 +34,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useDeleteUser, useUsers } from "@/hooks/useUsers";
+import type { UserType } from "@/schema/user.schema";
 import { MoreHorizontalIcon } from "lucide-react";
-import { Link } from "react-router";
-const User = () => {
-  const { data: user = [], isLoading, isError, error } = useUsers();
+import { Link, useSearchParams } from "react-router";
+const UserPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = Number(searchParams.get("page")) || 1;
+
+  const { data: responseData, isLoading, isError } = useUsers(page);
   const { mutate: removeUser } = useDeleteUser();
-  if (isError) return <h1>{error.message}</h1>;
+
+  const handlePageChange = (targetPage: number) => {
+    setSearchParams({ page: targetPage.toString() });
+  };
+   const meta = responseData?.data;
+   const user = meta?.data || [];
+   console.log(user)
+
   return (
     <div className="w-full p-4">
       <div className="flex justify-between my-4">
@@ -62,10 +74,10 @@ const User = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading ? (
+            {isLoading || isError ? (
               <SkeletonTable row={20} col={7} />
             ) : (
-              user.map((data) => (
+              user.map((data: UserType) => (
                 <TableRow>
                   <TableCell className="font-medium" key={data.nim}>
                     {data.nim}
@@ -144,8 +156,9 @@ const User = () => {
           </TableBody>
         </Table>
       </div>
+      <PaginationComponent meta={meta} onPageChange={handlePageChange} />
     </div>
   );
 };
 
-export default User;
+export default UserPage;

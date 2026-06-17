@@ -9,10 +9,10 @@ import { handleError } from "@/utils/handleError";
 import { handleSuccess } from "@/utils/handleSuccess";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export const useUsers = () => {
+export const useUsers = (page: number) => {
   return useQuery({
-    queryKey: ["users"],
-    queryFn: getUser,
+    queryKey: ["users", page],
+    queryFn: () => getUser(page),
   });
 };
 

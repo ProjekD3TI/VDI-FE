@@ -25,13 +25,13 @@ export const useDetailVm = (vmid: number) => {
     enabled: !!vmid,
   });
 };
-export const useGetTemplate = (enabled=false) =>{
+export const useGetTemplate = (enabled = false) => {
   return useQuery({
-    queryKey:['vms/templates'],
-    queryFn:getTemplate,
+    queryKey: ["vms/templates"],
+    queryFn: getTemplate,
     enabled,
-  })
-}
+  });
+};
 export const useCreateVm = (onSuccessCallback?: () => void) => {
   const queryClient = useQueryClient();
 
@@ -70,11 +70,17 @@ export const useActionVm = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ vmid, action }: { vmid: number; action: string }) =>
-      actionVm(vmid, action),
-    onSuccess: (data) => {
+    mutationFn: ({
+      vmid,
+      action,
+    }: {
+      vmid: number | null | undefined;
+      action: string;
+    }) => actionVm(vmid, action),
+    onSuccess: (data, variables) => {
       handleSuccess(data.message);
       queryClient.invalidateQueries({ queryKey: ["vms"] });
+      queryClient.invalidateQueries({ queryKey: ["vm", variables.vmid] });
     },
     onError: (error) => {
       handleError(error);

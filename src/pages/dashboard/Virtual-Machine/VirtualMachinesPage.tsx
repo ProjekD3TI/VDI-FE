@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VirtualDesktopTable from "./components/VirtualDesktopTable";
 
-const VirtualMachines = () => {
+const VirtualMachinesPage = () => {
   return (
     <Tabs defaultValue="desktop" className="w-full m-4">
       <TabsList>
@@ -24,4 +24,4 @@ const VirtualMachines = () => {
   );
 };
 
-export default VirtualMachines;
+export default VirtualMachinesPage;
