@@ -1,5 +1,5 @@
 import LineChart from "@/components/LineChart";
-import SemiDoughnatChart from "@/components/SemiDoughnatChart";
+import SemiDoughnutChart from "@/components/SemiDoughnutChart";
 import DetailVmSkeleton from "@/components/skeleteton/DetailVmSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -99,7 +99,7 @@ const DetailVirtualMachinePage = () => {
               CPU Usage
             </div>
             <div className="flex justify-center">
-              <SemiDoughnatChart
+              <SemiDoughnutChart
                 usedCpu={data?.cpu_usage}
                 totalCpu={data?.cpus}
               />

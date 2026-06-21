@@ -53,7 +53,7 @@ const Layout = () => {
           </SidebarContent>
           <SidebarFooter>
             <SidebarMenuButton asChild>
-              <Button onClick={() => logout} disabled={isPending}>
+              <Button onClick={() => logout()} disabled={isPending}>
                 {isPending ? "Logging Out" : "Logout"}
               </Button>
             </SidebarMenuButton>

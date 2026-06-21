@@ -1,12 +1,13 @@
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import type { Plugin } from "chart.js";
+import type { Plugin, TooltipItem } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface ICpu {
-  usedCpu?: number;
-  totalCpu?: number;
+  percentage?: number;
+  total?: number;
+  text: string;
 }
 
 interface CenterTextOptions {
@@ -37,23 +38,21 @@ const centerTextPlugin: Plugin<"doughnut"> = {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    // Semi doughnut perlu sedikit offset ke bawah
     ctx.fillText(text, centerX, centerY - 20);
 
     ctx.restore();
   },
 };
 
-const SemiDoughnutChart = ({ usedCpu = 0, totalCpu = 0 }: ICpu) => {
-  const remainingCpu = Math.max(0, totalCpu - usedCpu);
-
-  const percentage =
-    totalCpu > 0 ? ((usedCpu / totalCpu) * 100).toFixed(1) : "0.0";
+const HalfDoughnutChart = ({ percentage = 0, total = 0, text }: ICpu) => {
+  // memastikan nilai tetap di range 0-100
+  const usedPercentage = Math.min(100, Math.max(0, percentage));
+  const remainingPercentage = 100 - usedPercentage;
 
   const data = {
     datasets: [
       {
-        data: [usedCpu, remainingCpu],
+        data: [usedPercentage, remainingPercentage],
         backgroundColor: ["#d87943", "#e5e7eb"],
         borderWidth: 0,
         cutout: "75%",
@@ -74,13 +73,10 @@ const SemiDoughnutChart = ({ usedCpu = 0, totalCpu = 0 }: ICpu) => {
       },
       tooltip: {
         callbacks: {
-          label: (context: any) => {
-            return `${context.raw} CPU`;
-          },
+          label: (context: TooltipItem<"doughnut">) => `${context.raw}%`,
         },
       },
 
-      // opsi untuk plugin custom
       centerText: {
         text: `${percentage}%`,
       },
@@ -89,18 +85,13 @@ const SemiDoughnutChart = ({ usedCpu = 0, totalCpu = 0 }: ICpu) => {
 
   return (
     <div className="w-full max-w-100">
-      <Doughnut
-        className=""
-        data={data}
-        options={options}
-        plugins={[centerTextPlugin]}
-      />
+      <Doughnut data={data} options={options} plugins={[centerTextPlugin]} />
 
       <div className="text-center -mt-6">
-        <span className="text-primary">{totalCpu}</span> vCPU cores allocated
+        <span className="text-primary">{total}</span> {text}
       </div>
     </div>
   );
 };
 
-export default SemiDoughnutChart;
+export default HalfDoughnutChart;

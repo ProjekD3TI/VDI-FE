@@ -10,11 +10,13 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useLogin } from "@/hooks/useAuth";
+import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 
 const LoginPages = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [viewPassword, setViewPassword] = useState(true);
 
   const { mutate: login, isPending, isError } = useLogin();
 
@@ -61,14 +63,27 @@ const LoginPages = () => {
               <FieldDescription>
                 Must be at least 8 characters long.
               </FieldDescription>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="relative flex items-center">
+                <Input
+                  id="password"
+                  type={viewPassword ? "password" : "text"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pr-10"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setViewPassword(!viewPassword)}
+                  className="absolute right-3 text-gray-500 hover:text-gray-700 focus:outline-none"
+                  aria-label={
+                    viewPassword ? "Tampilkan sandi" : "Sembunyikan sandi"
+                  }
+                >
+                  {viewPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                </button>
+              </div>
             </Field>
           </FieldGroup>
           <Button type="submit" className="w-full" disabled={isPending}>
