@@ -2,11 +2,11 @@ import { Field, FieldLabel } from "./ui/field";
 import { Progress } from "./ui/progress";
 interface IProps {
   name: string;
-  used: number | undefined | null;
-  total: number | undefined | null;
-  percent: number | undefined | null;
+  used: number | undefined;
+  total: number | undefined;
+  percent: number | undefined;
 }
-const LineChart = ({ name, used, total, percent }: IProps) => {
+const LineChart = ({ name, used = 0, total = 0, percent = 0 }: IProps) => {
   return (
     <Field className="w-full">
       <FieldLabel htmlFor="data">

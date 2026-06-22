@@ -22,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { getAvailableIpAddress } from "@/services/ipAddress.service";
 import { useQuery } from "@tanstack/react-query";
 import { useCreateVm, useGetTemplate } from "@/hooks/useVirtualDesktops";
 import { useAvailableIpAddress } from "@/hooks/useIpAddress";

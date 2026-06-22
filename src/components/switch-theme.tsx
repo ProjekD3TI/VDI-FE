@@ -1,10 +1,10 @@
-import { Moon, Sun } from "lucide-react";
+import { Moon } from "lucide-react";
 
-import { useTheme } from "@/components/theme-provider";
+// import { useTheme } from "@/components/theme-provider";
 
 export function ModeSwitch() {
   // const { setTheme } = useTheme();
-  const theme = true
+  // const theme = true
 
   return (
     <>
