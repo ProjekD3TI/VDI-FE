@@ -177,7 +177,7 @@ const ModalFormCreateVM = ({ id }: Props) => {
                         }
                       />
                     </SelectTrigger>
-                    <SelectContent className="max-h-[200px]">
+                    <SelectContent className="max-h-50">
                       <SelectGroup>
                         {template.map((data) => (
                           <SelectItem

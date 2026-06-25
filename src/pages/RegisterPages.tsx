@@ -1,8 +1,8 @@
-// components/ModalFormCreateUser.tsx
-import { useRef } from "react";
-import { Button } from "./ui/button";
-import { Field, FieldGroup, FieldLabel } from "./ui/field";
-import { Input } from "./ui/input";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+
 import {
   Select,
   SelectContent,
@@ -11,51 +11,50 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
-import { useAngkatan } from "@/hooks/useAngkatan";
+} from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+import { useGetAngkatan } from "@/hooks/useAngkatan";
 import { useCreateUserForm } from "@/hooks/useCreateUserForm";
-import { Spinner } from "./ui/spinner";
+import { useRef } from "react";
+import AlertSuccessRegister from "@/components/AlertSuccessRegister";
 
-const ModalFormCreateUser = () => {
+export function RegisterPages() {
   const formRef = useRef<HTMLFormElement>(null);
 
   // Mengambil state dan logic dari custom hook
   const {
-    isOpen,
-    setIsOpen,
     formData,
     errors,
     isPending,
     handleChange,
     handleSelectChange,
     handleSubmit,
+    handleCloseDialog,
+    success,
   } = useCreateUserForm();
 
   // Query data angkatan tetap dipanggil di level view
-  const { data: angkatan = [], isLoading: isLoadingAngkatan } = useAngkatan();
+  const { data: angkatan = [], isLoading: isLoadingAngkatan } =
+    useGetAngkatan();
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button>Create User</Button>
-      </DialogTrigger>
-      <DialogContent className="">
-        <form ref={formRef} onSubmit={handleSubmit} className="md:w-116">
-          <DialogHeader>
-            <DialogTitle>Create User</DialogTitle>
-            <DialogDescription>
-              Click save when you&apos;re done.
-            </DialogDescription>
-          </DialogHeader>
+    <div className="w-full p-20 flex flex-col justify-center items-center h-screen ">
+      <h1 className="text-2xl font-bold mb-5 w-xs md:w-md text-center">
+        Welcome to br
+        <span className="text-primary"> Virtual Desktop Infrastructure</span> D3
+        TI !
+      </h1>
+      <AlertSuccessRegister
+        handleCloseDialog={handleCloseDialog}
+        open={success}
+      />
+      <Card className="w-fit p-5">
+        <h1 className="text-center text-xl font-semibold mb-6">Register</h1>
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          className="md:w-116 flex flex-col gap-3"
+        >
           <FieldGroup className="grid min-w-74 grid-cols-1 md:grid-cols-2">
             <Field>
               <FieldLabel>NIM</FieldLabel>
@@ -65,11 +64,11 @@ const ModalFormCreateUser = () => {
                 onChange={handleChange}
                 placeholder="NIM"
               />
+
               {errors.nim && (
                 <p className="text-xs text-red-500">{errors.nim}</p>
               )}
             </Field>
-
             <Field>
               <FieldLabel>Name</FieldLabel>
               <Input
@@ -78,11 +77,7 @@ const ModalFormCreateUser = () => {
                 onChange={handleChange}
                 placeholder="Nama"
               />
-              {errors.name && (
-                <p className="text-xs text-red-500">{errors.name}</p>
-              )}
             </Field>
-
             <Field>
               <FieldLabel>Username</FieldLabel>
               <Input
@@ -95,7 +90,6 @@ const ModalFormCreateUser = () => {
                 <p className="text-xs text-red-500">{errors.username}</p>
               )}
             </Field>
-
             <Field>
               <FieldLabel>Email</FieldLabel>
               <Input
@@ -109,7 +103,6 @@ const ModalFormCreateUser = () => {
                 <p className="text-xs text-red-500">{errors.email}</p>
               )}
             </Field>
-
             <Field>
               <FieldLabel>Angkatan</FieldLabel>
               <Select
@@ -138,21 +131,12 @@ const ModalFormCreateUser = () => {
                 <p className="text-xs text-red-500">{errors.angkatan_id}</p>
               )}
             </Field>
-          </FieldGroup>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsOpen(false)}
-            >
-              Cancel
+            <Button type="submit" className="md:col-span-2">
+              {isPending ? <Spinner /> : "Submit"}
             </Button>
-            <Button type="submit">{isPending ? <Spinner /> : "Save"}</Button>
-          </DialogFooter>
+          </FieldGroup>
         </form>
-      </DialogContent>
-    </Dialog>
+      </Card>
+    </div>
   );
-};
-
-export default ModalFormCreateUser;
+}

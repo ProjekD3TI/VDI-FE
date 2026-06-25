@@ -1,4 +1,5 @@
 import type { CreateUserType } from "@/schema/user.schema";
+import { register } from "@/services/auth.service";
 import {
   createUser,
   deleteUser,
@@ -23,7 +24,20 @@ export const useUserById = (id: number) => {
     enabled: !!id,
   });
 };
-
+export const useRegister = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: CreateUserType) => register(payload),
+    onSuccess: (data) => {
+      handleSuccess(data.message);
+      queryClient.invalidateQueries({ queryKey: ["register"] });
+    },
+    onError: (error) => {
+      console.log("ERROR REGISTER", error);
+      handleError(error);
+    },
+  });
+};
 export const useCreateUser = () => {
   const queryClient = useQueryClient();
   return useMutation({

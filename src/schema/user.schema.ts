@@ -20,15 +20,15 @@ export type UserType = z.infer<typeof UserSchema>;
 export const CreateUserSchema = z.object({
   nim: z
     .string()
-    .min(1, "NIM wajib diisi")
+    .min(1, "NIM is required.")
     .regex(
       /^V34\d{5}$/,
-      "Format NIM harus diawali V34 dan diikuti 5 digit angka (Contoh: V3421001)",
+      "The NIM format must begin with V34 and be followed by 5 digits (Example: V3421001).",
     ),
 
   name: z
     .string()
-    .min(3, "Nama minimal 3 karakter")
+    .min(3, "Name must be at least 3 characters long.")
     .transform(
       (val) =>
         val
@@ -40,18 +40,18 @@ export const CreateUserSchema = z.object({
 
   username: z
     .string()
-    .min(3, "Username minimal 3 karakter")
+    .min(3, "Username must be at least 3 characters long.")
     .regex(
       /^[a-zA-Z0-9.-]+$/,
-      "Nama hanya boleh berisi huruf, angka, tanda hubung (-), dan titik (.) tanpa spasi",
+      "The name may only contain letters, numbers, hyphens (-), and periods (.) without spaces",
     )
-    .regex(/^[a-zA-Z0-9]/, "Nama harus diawali dengan huruf atau angka"),
+    .regex(/^[a-zA-Z0-9]/, "The name must start with a letter or a number."),
 
   email: z
-    .email("Format email tidak valid")
+    .email("Invalid email format.")
     .endsWith(
       "@student.uns.ac.id",
-      "Email harus menggunakan domain resmi @student.uns.ac.id",
+      "The email must use the official @student.uns.ac.id domain.",
     ),
 
   angkatan_id: z.coerce.number({

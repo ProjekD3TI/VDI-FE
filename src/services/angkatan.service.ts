@@ -6,3 +6,8 @@ export const getAngkatan = async () => {
   const schema = z.array(AngkatanSchema);
   return schema.parse(response.data.data);
 };
+export const getRegisterAngkatan = async () => {
+  const response = await api.get("/register/angkatan");
+  const schema = z.array(AngkatanSchema);
+  return schema.parse(response.data.data);
+};

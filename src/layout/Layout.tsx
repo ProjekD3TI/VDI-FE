@@ -7,7 +7,6 @@ import {
   SidebarMenuButton,
   SidebarProvider,
 } from "@/components/ui/sidebar";
-import { Toaster } from "@/components/ui/sonner";
 import { useLogout } from "@/hooks/useAuth";
 import { NavLink, Outlet, useLocation } from "react-router";
 
@@ -62,7 +61,6 @@ const Layout = () => {
         </Sidebar>
       </SidebarProvider>
       <Outlet />
-      <Toaster />
     </div>
   );
 };

@@ -47,9 +47,8 @@ const UserPage = () => {
   const handlePageChange = (targetPage: number) => {
     setSearchParams({ page: targetPage.toString() });
   };
-   const meta = responseData?.data;
-   const user = meta?.data || [];
-   console.log(user)
+  const meta = responseData?.data;
+  const user = meta?.data || [];
 
   return (
     <div className="w-full p-4">

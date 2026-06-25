@@ -1,83 +1,54 @@
 // hooks/useCreateUserForm.ts
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import axios from "axios";
 import { toast } from "sonner";
-
-import type { AngkatanType } from "@/schema/angkatan.schema";
 import { CreateUserSchema } from "@/schema/user.schema";
+import { useCreateUser } from "@/hooks/useUsers";
 
-import { getAngkatan } from "@/services/angkatan.service";
-import { createUser } from "@/services/user.service";
+export const useCreateUserForm = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { mutateAsync: addUser, isPending } = useCreateUser();
+  const [success, setIsSuccess] = useState(false);
+  const [formData, setFormData] = useState({
+    nim: "",
+    name: "",
+    username: "",
+    email: "",
+    angkatan_id: "",
+  });
 
-interface UseCreateUserFormProps {
-  refreshData?: () => void;
-  onSuccess?: () => void;
-}
-
-const initialForm = {
-  nim: "",
-  name: "",
-  username: "",
-  email: "",
-  angkatan_id: "",
-};
-
-export const useCreateUserForm = ({
-  refreshData,
-  onSuccess,
-}: UseCreateUserFormProps) => {
-  const [angkatan, setAngkatan] = useState<AngkatanType[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const [formData, setFormData] = useState(initialForm);
-
-  useEffect(() => {
-    const loadAngkatan = async () => {
-      try {
-        const data = await getAngkatan();
-        setAngkatan(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    void loadAngkatan();
-  }, []);
-
+  const handleCloseDialog = () => {
+    setIsSuccess(false);
+  };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
 
-    setErrors((prev) => ({
-      ...prev,
-      [name]: "",
-    }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
-  const handleAngkatanChange = (value: string) => {
+  const handleSelectChange = (value: string) => {
     setFormData((prev) => ({
       ...prev,
       angkatan_id: value,
     }));
 
-    setErrors((prev) => ({
-      ...prev,
-      angkatan_id: "",
-    }));
+    if (errors.angkatan_id) {
+      setErrors((prev) => ({ ...prev, angkatan_id: "" }));
+    }
   };
 
-  const resetForm = () => {
-    setFormData(initialForm);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setErrors({});
-  };
 
-  const handleSubmit = async () => {
     const result = CreateUserSchema.safeParse(formData);
-
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
 
@@ -87,45 +58,50 @@ export const useCreateUserForm = ({
       });
 
       setErrors(fieldErrors);
-
-      toast.error("Data tidak valid", {
-        position: "top-center",
-      });
-
-      return false;
+      toast.error("Validation failed.", { position: "top-center" });
+      return;
     }
 
     try {
-      await createUser(result.data);
+      await addUser(result.data);
 
-      toast.success("Berhasil membuat user", {
-        position: "top-center",
+      // Reset Form jika sukses
+      setFormData({
+        nim: "",
+        name: "",
+        username: "",
+        email: "",
+        angkatan_id: "",
       });
-
-      refreshData?.();
-
-      resetForm();
-
-      onSuccess?.();
-
-      return true;
+      setIsOpen(false);
+      setErrors({});
+      setIsSuccess(true);
     } catch (error) {
-      console.error(error);
+      if (axios.isAxiosError(error) && error.response?.data?.error) {
+        const backendErrors = error.response.data.error;
+        const fieldErrors: Record<string, string> = {};
 
-      return false;
+        Object.keys(backendErrors).forEach((key) => {
+          fieldErrors[key] = backendErrors[key][0];
+        });
+
+        setErrors(fieldErrors);
+      } else {
+        console.error(error);
+      }
     }
   };
 
   return {
-    angkatan,
-
+    isOpen,
+    setIsOpen,
     formData,
     errors,
-
+    isPending,
     handleChange,
-    handleAngkatanChange,
-
+    handleSelectChange,
     handleSubmit,
-    resetForm,
+    handleCloseDialog,
+    success,
   };
 };

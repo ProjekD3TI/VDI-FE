@@ -6,7 +6,7 @@ import type { CreateUserType } from "@/schema/user.schema"; // Sesuaikan path
 export const getUser = async (page: number) => {
   const response = await api.get(`/users?page=${page}`);
 
-  return response.data
+  return response.data;
 };
 
 export const getUserById = async (id: number) => {
@@ -16,7 +16,7 @@ export const getUserById = async (id: number) => {
 };
 
 export const createUser = async (payload: CreateUserType) => {
-  const response = await api.post("/users", payload);
+  const response = await api.post("/register", payload);
   return response.data;
 };
 
