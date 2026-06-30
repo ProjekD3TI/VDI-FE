@@ -31,14 +31,11 @@ export default function ProxmoxDashboard() {
     );
   }
   return (
-    <div className="p-6  min-h-screen w-full">
+    <>
       {!metrics && isLoading && !isError ? (
         <DetailVmSkeleton />
       ) : (
         <>
-          <h1 className="text-2xl font-bold mb-6 ">
-            VDI Infrastructure Monitor
-          </h1>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <Card className="px-5 w-full items-center flex flex-row ">
               <Server className="text-primary" />
@@ -114,7 +111,7 @@ export default function ProxmoxDashboard() {
               {metrics.storage.map((disk, index) => (
                 <Field key={index} className="w-full">
                   <FieldLabel htmlFor="data">
-                    <span>{disk.name}</span>
+                    <span>{disk.type}</span>
                     <span className="ml-auto">{`${disk.used_gb}/${disk.total_gb}`}</span>
                   </FieldLabel>
                   <Progress
@@ -135,6 +132,6 @@ export default function ProxmoxDashboard() {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 }

@@ -19,7 +19,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Field } from "@/components/ui/field";
@@ -33,30 +32,54 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useAdminResendEmailVerification } from "@/hooks/useEmailVerification";
 import { useDeleteUser, useUsers } from "@/hooks/useUsers";
 import type { UserType } from "@/schema/user.schema";
 import { MoreHorizontalIcon } from "lucide-react";
+import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 const UserPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get("page")) || 1;
+  const search = searchParams.get("search") || "";
+  const [keyword, setKeyword] = useState(search);
 
-  const { data: responseData, isLoading, isError } = useUsers(page);
+  const { data: responseData, isLoading, isError } = useUsers(page, search);
   const { mutate: removeUser } = useDeleteUser();
-
+  const {
+    mutate: resendEmail,
+    isPending: isResending,
+    variables: resendingUserId,
+  } = useAdminResendEmailVerification();
   const handlePageChange = (targetPage: number) => {
-    setSearchParams({ page: targetPage.toString() });
+    setSearchParams({
+      page: targetPage.toString(),
+      search,
+    });
   };
   const meta = responseData?.data;
   const user = meta?.data || [];
-
   return (
-    <div className="w-full p-4">
+    <>
       <div className="flex justify-between my-4">
         <ModalFormCreateUser />
         <Field orientation={"horizontal"} className="w-md">
-          <Input type="search" placeholder="Search..." />
-          <Button>Search</Button>
+          <Input
+            type="search"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder="Search..."
+          />
+          <Button
+            onClick={() =>
+              setSearchParams({
+                page: "1",
+                search: keyword,
+              })
+            }
+          >
+            Search
+          </Button>
         </Field>
       </div>
       <div className="bg-card p-3 border rounded-md">
@@ -69,6 +92,7 @@ const UserPage = () => {
               <TableHead>Email</TableHead>
               <TableHead>Angkatan</TableHead>
               <TableHead className="text-center">VMs</TableHead>
+              <TableHead className="text-center">Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -77,7 +101,7 @@ const UserPage = () => {
               <SkeletonTable row={20} col={7} />
             ) : (
               user.map((data: UserType) => (
-                <TableRow>
+                <TableRow key={data.nim}>
                   <TableCell className="font-medium" key={data.nim}>
                     {data.nim}
                   </TableCell>
@@ -86,7 +110,11 @@ const UserPage = () => {
                   <TableCell>{data.email}</TableCell>
                   <TableCell>{data.angkatan}</TableCell>
                   <TableCell className="text-center">
-                    {data.vm_status === null ? (
+                    {data.email_verified_at === null ? (
+                      <Button disabled variant="outline" className="w-full">
+                        Create VM
+                      </Button>
+                    ) : data.vm_status === null ? (
                       <ModalFormCreateVM id={data.id} />
                     ) : data.vm_status === "creating" ? (
                       <Button disabled>
@@ -101,6 +129,13 @@ const UserPage = () => {
                       </Button>
                     ) : null}
                   </TableCell>
+                  <TableCell className="text-center">
+                    {data.email_verified_at ? (
+                      <span className="text-secondary">Verified</span>
+                    ) : (
+                      <span className="text-red-600">Unverified</span>
+                    )}
+                  </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -110,9 +145,26 @@ const UserPage = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Detail</DropdownMenuItem>
-                        <DropdownMenuSeparator />
+                        {!data.email_verified_at && (
+                          <DropdownMenuItem
+                            onSelect={(e) => {
+                              e.preventDefault(); // Mencegah dropdown tertutup seketika jika diinginkan
+                              resendEmail(data.id);
+                            }}
+                            disabled={
+                              isResending && resendingUserId === data.id
+                            }
+                            className="cursor-pointer flex items-center justify-center w-full"
+                          >
+                            {isResending && resendingUserId === data.id ? (
+                              <>
+                                <Spinner className="mr-2 h-4 w-4" /> Sending...
+                              </>
+                            ) : (
+                              "Resend"
+                            )}
+                          </DropdownMenuItem>
+                        )}
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
@@ -156,7 +208,7 @@ const UserPage = () => {
         </Table>
       </div>
       <PaginationComponent meta={meta} onPageChange={handlePageChange} />
-    </div>
+    </>
   );
 };
 

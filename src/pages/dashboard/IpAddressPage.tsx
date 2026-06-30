@@ -33,7 +33,7 @@ const IpAddress = () => {
   const ipList = meta?.data || [];
 
   return (
-    <div className="flex flex-col w-full m-4 ">
+    <>
       <div className="bg-card p-3 border rounded-md w-full h-fit">
         <Table>
           <TableHeader>
@@ -73,7 +73,7 @@ const IpAddress = () => {
 
       {/* Panggil komponen reusable di sini */}
       <PaginationComponent meta={meta} onPageChange={handlePageChange} />
-    </div>
+    </>
   );
 };
 

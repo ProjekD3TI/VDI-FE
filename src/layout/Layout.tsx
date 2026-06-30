@@ -60,7 +60,9 @@ const Layout = () => {
           </SidebarFooter>
         </Sidebar>
       </SidebarProvider>
-      <Outlet />
+      <div className="p-8 w-full">
+        <Outlet />
+      </div>
     </div>
   );
 };

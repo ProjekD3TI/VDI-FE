@@ -6,6 +6,7 @@ export const UserSchema = z.object({
   name: z.string(),
   username: z.string(),
   email: z.email(),
+  email_verified_at: z.string().optional(),
   angkatan: z.number(),
   vmid: z.number().nullable().optional(),
   vm_status: z

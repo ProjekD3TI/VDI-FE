@@ -3,12 +3,16 @@ import { UserSchema } from "@/schema/user.schema";
 import api from "@/api/axiosInstance";
 import type { CreateUserType } from "@/schema/user.schema"; // Sesuaikan path
 
-export const getUser = async (page: number) => {
-  const response = await api.get(`/users?page=${page}`);
+export const getUser = async (page: number, search: string = "") => {
+  const response = await api.get("/users", {
+    params: {
+      page,
+      search,
+    },
+  });
 
   return response.data;
 };
-
 export const getUserById = async (id: number) => {
   const response = await api.get(`/users/${id}`);
   const schema = UserSchema;

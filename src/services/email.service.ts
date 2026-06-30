@@ -31,3 +31,7 @@ export const resendVerifyEmail = async (id:number) => {
   });
   return response.data;
 };
+export const adminResendVerifyEmail = async (id: number) => {
+  const response = await api.post(`/admin/email/resend`, { id });
+  return response.data;
+};

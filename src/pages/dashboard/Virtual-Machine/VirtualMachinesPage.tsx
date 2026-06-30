@@ -5,7 +5,7 @@ import VirtualDesktopTable from "./components/VirtualDesktopTable";
 
 const VirtualMachinesPage = () => {
   return (
-    <Tabs defaultValue="desktop" className="w-full m-4">
+    <Tabs defaultValue="desktop">
       <TabsList>
         <TabsTrigger value="desktop">Desktop</TabsTrigger>
         <TabsTrigger value="analytics">Template</TabsTrigger>

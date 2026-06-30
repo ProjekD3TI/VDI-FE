@@ -16,55 +16,54 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useEffect, useState } from "react";
-import type { AngkatanType } from "@/schema/angkatan.schema";
-import { getAngkatan } from "@/services/angkatan.service";
+
+import { Card } from "@/components/ui/card";
+import { useAngkatan } from "@/hooks/useAngkatan";
+
+import ModalCreateAngkatan from "@/components/ModalCreateAngkatan";
 
 const Angkatan = () => {
-  const [angkatan, setAngkatan] = useState<AngkatanType[]>([]);
-  useEffect(() => {
-    const loadData = async () => {
-      const data = await getAngkatan();
-      setAngkatan(data);
-    };
-    loadData();
-  });
+  const { data: angkatan } = useAngkatan();
+
   return (
-    <div className="w-full m-20 g-card p-3 border rounded-md">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Angkatan</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {angkatan.map((data) => (
+    <>
+      <ModalCreateAngkatan />
+      <Card className="w-full">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell className="font-medium">{data.angkatan}</TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="size-8">
-                      <MoreHorizontalIcon />
-                      <span className="sr-only">Open menu</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Edit</DropdownMenuItem>
-                    <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem variant="destructive">
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
+              <TableHead>Angkatan</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+          </TableHeader>
+          <TableBody>
+            {angkatan?.map((data) => (
+              <TableRow key={data.id}>
+                <TableCell className="font-medium">{data.angkatan}</TableCell>
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="size-8">
+                        <MoreHorizontalIcon />
+                        <span className="sr-only">Open menu</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>Edit</DropdownMenuItem>
+                      <DropdownMenuItem>Duplicate</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem variant="destructive">
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+    </>
   );
 };
 export default Angkatan;

@@ -9,6 +9,7 @@ export const useCreateUserForm = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { mutateAsync: addUser, isPending } = useCreateUser();
   const [success, setIsSuccess] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     nim: "",
     name: "",
@@ -17,7 +18,6 @@ export const useCreateUserForm = () => {
     angkatan_id: "",
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const handleCloseDialog = () => {
     setIsSuccess(false);
   };
