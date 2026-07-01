@@ -30,7 +30,7 @@ export default function ModalCreateAngkatan() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Add Angkatan</Button>
+        <Button >Add Angkatan</Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-sm">

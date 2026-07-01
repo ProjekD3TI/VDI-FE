@@ -61,9 +61,10 @@ const ModalFormCreateUser = () => {
               <FieldLabel>NIM</FieldLabel>
               <Input
                 name="nim"
-                value={formData.nim}
+                value={formData.nim.toUpperCase()}
                 onChange={handleChange}
                 placeholder="NIM"
+                autoCapitalize="on"
               />
               {errors.nim && (
                 <p className="text-xs text-red-500">{errors.nim}</p>
@@ -77,6 +78,7 @@ const ModalFormCreateUser = () => {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Nama"
+                className="capitalize"
               />
               {errors.name && (
                 <p className="text-xs text-red-500">{errors.name}</p>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useCreateAngkatan } from "./useAngkatan";
-import { AngkatanSchema } from "@/schema/angkatan.schema";
+import { CreateAngkatanSchema } from "@/schema/angkatan.schema";
 import { toast } from "sonner";
 import axios from "axios";
 
@@ -33,20 +33,19 @@ export const useCreateAngkatanForm = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('first')
     setErrors({});
-    
-    const result = AngkatanSchema.safeParse(formData);
-    
+
+    const result = CreateAngkatanSchema.safeParse(formData);
+
     if (!result.success) {
-      console.log('error')
+      console.log("error");
       const fieldErrors: Record<string, string> = {};
 
       result.error.issues.forEach((issue) => {
         const field = issue.path[0] as string;
         fieldErrors[field] = issue.message;
       });
-      console.log(fieldErrors)
+      console.log(fieldErrors);
       setErrors(fieldErrors);
       return;
     }

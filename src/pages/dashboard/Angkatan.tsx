@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -18,13 +17,26 @@ import {
 } from "@/components/ui/table";
 
 import { Card } from "@/components/ui/card";
-import { useAngkatan } from "@/hooks/useAngkatan";
+import { useAngkatan, useDeleteAngkatan } from "@/hooks/useAngkatan";
 
 import ModalCreateAngkatan from "@/components/ModalCreateAngkatan";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { ModalEditAngkatan } from "@/components/ModalEditAngkatan";
+
 const Angkatan = () => {
   const { data: angkatan } = useAngkatan();
-
+  const { mutate: removeAngkatan } = useDeleteAngkatan();
   return (
     <>
       <ModalCreateAngkatan />
@@ -49,12 +61,41 @@ const Angkatan = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Duplicate</DropdownMenuItem>
+                      <ModalEditAngkatan id={data.id} />
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem variant="destructive">
-                        Delete
-                      </DropdownMenuItem>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            className="text-red-500 w-full"
+                          >
+                            Delete
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will
+                              permanently delete{" "}
+                              <span className="text-primary">
+                                {data.angkatan}
+                              </span>{" "}
+                              from our servers.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => removeAngkatan(data.id)}
+                            >
+                              Continue
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
