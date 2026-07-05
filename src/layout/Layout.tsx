@@ -1,3 +1,4 @@
+import Logo from "@/assets/logo-text.webp";
 import { Button } from "@/components/ui/button";
 import {
   Sidebar,
@@ -21,8 +22,8 @@ const Layout = () => {
     <div className="flex">
       <SidebarProvider className="w-fit">
         <Sidebar>
-          <SidebarHeader>
-            <span>logo</span>
+          <SidebarHeader className=" flex items-center justify-center">
+            <img src={Logo} className="w-40" />
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenuButton asChild isActive={isActive("/dashboard")}>
@@ -56,7 +57,7 @@ const Layout = () => {
                 {isPending ? "Logging Out" : "Logout"}
               </Button>
             </SidebarMenuButton>
-            <span>Copyright 2024</span>
+            <span className="text-center text-xs">Copyright 2026</span>
           </SidebarFooter>
         </Sidebar>
       </SidebarProvider>

@@ -60,7 +60,7 @@ export function RegisterPages() {
               <FieldLabel>NIM</FieldLabel>
               <Input
                 name="nim"
-                value={formData.nim}
+                value={formData.nim.toUpperCase()}
                 onChange={handleChange}
                 placeholder="NIM"
               />
@@ -76,6 +76,7 @@ export function RegisterPages() {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Nama"
+                className="capitalize"
               />
             </Field>
             <Field>

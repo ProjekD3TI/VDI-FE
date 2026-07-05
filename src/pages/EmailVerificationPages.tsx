@@ -1,3 +1,4 @@
+import VdiLogo from "@/assets/logo-text-with-icon.webp";
 import { useSearchParams } from "react-router";
 import {
   useEmailVerification,
@@ -8,6 +9,7 @@ import JoinVektor from "@/assets/join.svg";
 import FailedVektor from "@/assets/failed.svg";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
+import { isAxiosError } from "axios";
 export default function EmailVerification() {
   const [searchParams] = useSearchParams();
 
@@ -28,10 +30,8 @@ export default function EmailVerification() {
     <div className="w-full flex flex-col gap-16 p-16 justify-center items-center min-h-screen">
       {isSuccess && (
         <>
+          <img src={VdiLogo} className="w-30" />
           <Card className="w-fit max-w-md container p-10 flex flex-col items-center justify-center relative">
-            <h2 className="text-lg font-semibold absolute -top-4">
-              <span className="text-primary">VDI</span> D3 TI
-            </h2>
             <img src={JoinVektor} className="size-30 md:size-50 text-center" />
             <h1 className="font-semibold text-md md:text-2xl text-center">
               {data.message || "Thank you for verifying your email."}
@@ -45,10 +45,8 @@ export default function EmailVerification() {
       )}
       {isLoading && (
         <>
+          <img src={VdiLogo} className="w-30" />
           <Card className="w-fit max-w-md container p-10 flex flex-col items-center justify-center relative">
-            <h2 className="text-lg font-semibold absolute -top-4">
-              <span className="text-primary">VDI</span> D3 TI
-            </h2>
             <h1 className=" text-xs md:text-lg text-center">
               Verifying your email, please wait and don't close the window.
             </h1>
@@ -58,10 +56,8 @@ export default function EmailVerification() {
       )}
       {(!id || !hash) && (
         <>
+          <img src={VdiLogo} className="w-30" />
           <Card className="w-fit max-w-md container p-10 flex flex-col items-center justify-center relative">
-            <h2 className="text-lg font-semibold absolute -top-4">
-              <span className="text-primary">VDI</span> D3 TI
-            </h2>
             <img
               src={FailedVektor}
               className="size-30 md:size-50 text-center"
@@ -77,18 +73,18 @@ export default function EmailVerification() {
       )}
       {isError && (
         <>
+          <img src={VdiLogo} className="w-30" />
           <Card className="w-fit max-w-md  container p-10 flex flex-col items-center justify-center relative">
-            <h2 className="text-lg font-semibold absolute -top-4">
-              <span className="text-primary">VDI</span> D3 TI
-            </h2>
             <img
               src={FailedVektor}
               className="size-30 md:size-50 text-center"
             />
             <div className="flex flex-col items-center gap-1">
               <h1 className="font-semibold text-md md:text-2xl text-center">
-                {error?.response?.data?.message ||
-                  "Verification link has expired."}
+                {isAxiosError(error)
+                  ? error.response?.data?.message ||
+                    "Verification link has expired."
+                  : "Verification link has expired."}
               </h1>
               <span className="text-muted-foreground text-xs text-center">
                 You can request a new verification link below or contact the

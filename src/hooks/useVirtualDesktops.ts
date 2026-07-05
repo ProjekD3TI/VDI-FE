@@ -37,8 +37,8 @@ export const useCreateVm = (onSuccessCallback?: () => void) => {
 
   return useMutation({
     mutationFn: (payload: CreateVmType) => createVirtualMachine(payload),
-    onSuccess: () => {
-      handleSuccess("Virtual Machine Sedang dibuat. Mohon Tunggu !");
+    onSuccess: (data) => {
+      handleSuccess(data.message);
       // Refresh tabel VM dan tabel User
       queryClient.invalidateQueries({ queryKey: ["vms"] });
       queryClient.invalidateQueries({ queryKey: ["users"] });

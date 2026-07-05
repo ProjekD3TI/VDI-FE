@@ -29,7 +29,7 @@ const DetailVirtualMachinePage = () => {
 
   const { data, isLoading } = useDetailVm(Number(vmid));
   return (
-    <div className="m-10 w-full space-y-6">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
         <Button variant={"outline"} asChild>
           <Link to={"/dashboard/virtual-desktop"}>
